@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="WSO2_Demo_RecordSearch_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log level="custom">
+        <property name="***** Inside WSO2_Demo_RecordSearch_Seq *****" value="***** Inside WSO2_Demo_RecordSearch_Seq *****"/>
+    </log>
+    <payloadFactory media-type="json">
+        <format>{
+    "clientId": $1
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:clientId"/>
+        </args>
+    </payloadFactory>
+    <call>
+        <endpoint>
+            <http method="post" uri-template="http://localhost:8290/wso2-demo/fetch">
+                <suspendOnFailure>
+                    <initialDuration>-1</initialDuration>
+                    <progressionFactor>-1</progressionFactor>
+                    <maximumDuration>0</maximumDuration>
+                </suspendOnFailure>
+                <markForSuspension>
+                    <retriesBeforeSuspension>0</retriesBeforeSuspension>
+                </markForSuspension>
+            </http>
+        </endpoint>
+    </call>
+    <property expression="json-eval($.CLIENT_DETAILS.Client)" name="FetchData" scope="default" type="STRING"/>
+    <log level="custom">
+        <property expression="get-property('FetchData')" name="Fetch Data"/>
+    </log>
+    <filter regex="true" source="boolean(get-property('FetchData'))">
+        <then/>
+        <else>
+            <payloadFactory media-type="json">
+                <format>{
+	"message":"There Is No Existing Data With ClientId $1"
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:clientId"/>
+                </args>
+            </payloadFactory>
+            <respond/>
+        </else>
+    </filter>
+</sequence>

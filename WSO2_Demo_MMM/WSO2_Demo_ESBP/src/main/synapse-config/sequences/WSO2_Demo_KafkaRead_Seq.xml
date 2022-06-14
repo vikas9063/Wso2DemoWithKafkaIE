@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="WSO2_Demo_KafkaRead_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log level="custom">
+        <property name="*** LOG START INSIDE KAFKA EXAMPLE PROCESS SEQ ***" value="*** LOG START INSIDE KAFKA EXAMPLE PROCESS SEQ ***"/>
+        <property expression="get-property('partitionNo')" name="partitionNo" xmlns:ns="http://org.apache.synapse/xsd"/>
+        <property expression="get-property('messageValue')" name="messageValue" xmlns:ns="http://org.apache.synapse/xsd"/>
+    </log>
+    <property expression="json-eval($.clientId)" name="clientId" scope="default" type="STRING"/>
+    <log>
+        <property expression="get-property('payload')" name="*** GET PROPERTY OF PAYLOAD***"/>
+    </log>
+    <dbreport>
+        <connection>
+            <pool>
+                <driver>com.mysql.jdbc.Driver</driver>
+                <url>jdbc:mysql://localhost:3306/eidiko</url>
+                <user>root</user>
+                <password>root</password>
+            </pool>
+        </connection>
+        <statement>
+            <sql><![CDATA[update client_details set UPDATED_FROM_KAFKA = ? where CLIENT_ID=?]]></sql>
+            <parameter type="VARCHAR" value="Updated From Kafka"/>
+            <parameter expression="$ctx:clientId" type="INTEGER"/>
+        </statement>
+    </dbreport>
+    <log level="custom">
+        <property name="--------- Updated From Kafka Done -----------" value="--------- Updated From Kafka Done -----------"/>
+    </log>
+</sequence>

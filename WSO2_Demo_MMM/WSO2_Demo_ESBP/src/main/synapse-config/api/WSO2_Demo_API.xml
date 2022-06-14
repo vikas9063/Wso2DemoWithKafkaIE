@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/wso2-demo" name="WSO2_Demo_API" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" url-mapping="/insert">
+        <inSequence>
+            <log level="custom">
+                <property name="!!! Inside INSERT WSO2_Demo_API  !!!!!!" value="!!! Inside INSERT WSO2_Demo_API !!!!!!"/>
+                <property expression="json-eval($)" name="JSON_PAYLOAD"/>
+            </log>
+            <sequence key="WSO2_Demo_InsertValidation_Seq"/>
+            <propertyGroup>
+                <property expression="json-eval($)" name="ORIGINAL_PAYLOAD" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientName)" name="clientName" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientDob)" name="clientDob" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientEmail)" name="clientEmail" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientMobile)" name="clientMobile" scope="default" type="STRING"/>
+                <property expression="json-eval($.isActive)" name="isActive" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientRole)" name="clientRole" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientAddress)" name="clientAddress" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientGender)" name="clientGender" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientAdharNo)" name="clientAdharNo" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>
+					{
+					"_postCreateClientDetails":{
+					
+
+					"CLIENT_NAME":"$1",
+					"CLIENT_DOB":"$2",
+					"CLIENT_EMAIL":"$3",
+					"CLIENT_MOBILE":"$4",
+					"IS_ACTIVE":"$5",
+					"CLIENT_ROLE":"$6",
+					"CLIENT_ADDRESS":"$7",
+					"CLIENT_GENDER":"$8",
+					"CLIENT_ADHAR_NUMBER":"$9"
+
+					}
+					}
+				</format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('clientName')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientDob')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientEmail')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientMobile')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('isActive')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientRole')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientAddress')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientGender')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientAdharNo')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                </args>
+            </payloadFactory>
+            <log level="custom">
+                <property expression="json-eval($)" name="++++ AFter Constructing Payload INSERT CLIENT_DETAILS ++++"/>
+            </log>
+            <property name="Content-Type" scope="axis2" type="STRING" value="application/json"/>
+            <call>
+                <endpoint key="WSO2_Demo_Insert_EP"/>
+            </call>
+            <log level="custom">
+                <property name="*** After Calling WSO2_Demo_Fetch_EP ***" value="*** After Calling WSO2_Demo_Fetch_EP ***"/>
+                <property expression="json-eval($)" name="RESPONSE_PAYLOAD"/>
+            </log>
+            <property expression="json-eval($)" name="clientDetailsTable" scope="default" type="STRING"/>
+            <log level="custom">
+                <property expression="json-eval($)" name="++++ clientDetailsTable ++++++"/>
+            </log>
+            <script language="js"><![CDATA[payload=mc.getPayloadJSON();
+var entry=payload.GeneratedKeys.Entry;
+var reqId=entry[0].CLIENT_ID;
+mc.setProperty("clientIdScript",reqId.toString());]]></script>
+            <property expression="get-property('clientIdScript')" name="clientId" scope="default" type="STRING" xmlns:ns="http://org.apache.synapse/xsd"/>
+            <payloadFactory media-type="json">
+                <format>{"clientId" : "$1"}
+				</format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('clientId')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                </args>
+            </payloadFactory>
+            <kafkaTransport.init>
+                <bootstrapServers>localhost:9092</bootstrapServers>
+                <keySerializerClass>org.apache.kafka.common.serialization.StringSerializer</keySerializerClass>
+                <valueSerializerClass>org.apache.kafka.common.serialization.StringSerializer</valueSerializerClass>
+                <acks>all</acks>
+                <requestTimeout>10000</requestTimeout>
+                <timeout>8000</timeout>
+                <metadataFetchTimeout>5000</metadataFetchTimeout>
+                <maxPoolSize>50</maxPoolSize>
+            </kafkaTransport.init>
+            <kafkaTransport.publishMessages>
+                <topic>test</topic>
+            </kafkaTransport.publishMessages>
+            <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            <log level="custom">
+                <property name="*** END LOG INSIDE KAFKA EXAMPLE API *** " value="*** END LOG INSIDE KAFKA EXAMPLE API *** "/>
+                <property expression="json-eval($)" name="*** KAFKA EXAMPLE API RECIVING END PAYLOAD ***"/>
+            </log>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence>
+            <log level="custom">
+                <property name="*** Inside INSERT WSO2_Demo_API Fault Sequence ***" value="*** Inside INSERT WSO2_Demo_API Fault Sequence***"/>
+            </log>
+            <sequence key="Generic_Fault_Seq"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+    <resource methods="POST" url-mapping="/fetch">
+        <inSequence>
+            <log level="custom">
+                <property name="!!! Inside FETCH WSO2_Demo_API  !!!!!!" value="!!! Inside FETCH WSO2_Demo_API !!!!!!"/>
+                <property expression="json-eval($)" name="JSON_PAYLOAD"/>
+            </log>
+            <sequence key="WSO2_Demo_FetchValidation_Seq"/>
+            <property expression="json-eval($)" name="ORIGINAL_PAYLOAD" scope="default" type="STRING"/>
+            <property expression="json-eval($.clientId)" name="clientId" scope="default" type="STRING"/>
+            <payloadFactory media-type="json">
+                <format>{
+    "_postfetchClientDetails":{
+        "CLIENT_ID":$1
+    }
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('clientId')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                </args>
+            </payloadFactory>
+            <call>
+                <endpoint key="WSO2_Demo_Fetch_EP"/>
+            </call>
+            <log level="custom">
+                <property name="*** After Calling WSO2_Demo_Fetch_EP ***" value="*** After Calling WSO2_Demo_Fetch_EP ***"/>
+                <property expression="json-eval($)" name="RESPONSE_PAYLOAD"/>
+            </log>
+            <property expression="json-eval($.CLIENT_DETAILS.Client)" name="FetchData" scope="default" type="STRING"/>
+            <log level="custom">
+                <property expression="get-property('FetchData')" name="Fetch Data"/>
+            </log>
+            <filter regex="true" source="boolean(get-property('FetchData'))">
+                <then/>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{
+	"message":"There Is No Existing Data With ClientId $1"
+}</format>
+                        <args>
+                            <arg evaluator="xml" expression="$ctx:clientId"/>
+                        </args>
+                    </payloadFactory>
+                    <respond/>
+                </else>
+            </filter>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence>
+            <log level="custom">
+                <property name="*** Inside FETCH WSO2_Demo_API Fault Sequence ***" value="*** Inside FETCH WSO2_Demo_API Fault Sequence***"/>
+            </log>
+            <sequence key="Generic_Fault_Seq"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+    <resource methods="PUT" url-mapping="/update">
+        <inSequence>
+            <log level="custom">
+                <property name="!!! Inside UPDATE WSO2_Demo_API  !!!!!!" value="!!! Inside UPDATE WSO2_Demo_API !!!!!!"/>
+                <property expression="json-eval($)" name="JSON_PAYLOAD"/>
+            </log>
+            <sequence key="WSO2_Demo_UpdateValidation_Seq"/>
+            <propertyGroup>
+                <property expression="json-eval($)" name="ORIGINAL_PAYLOAD" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientId)" name="clientId" scope="default" type="INTEGER"/>
+                <property expression="json-eval($.clientName)" name="clientName" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientDob)" name="clientDob" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientEmail)" name="clientEmail" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientMobile)" name="clientMobile" scope="default" type="STRING"/>
+                <property expression="json-eval($.isActive)" name="isActive" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientRole)" name="clientRole" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientAddress)" name="clientAddress" scope="default" type="STRING"/>
+                <property expression="json-eval($.registrationDate)" name="registrationDate" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientGender)" name="clientGender" scope="default" type="STRING"/>
+                <property expression="json-eval($.clientAdharNo)" name="clientAdharNo" scope="default" type="STRING"/>
+            </propertyGroup>
+            <sequence key="WSO2_Demo_RecordSearch_Seq"/>
+            <payloadFactory media-type="json">
+                <format>
+					{
+					"_putupdateClientDetails":{
+					
+					"CLIENT_ID":$1,
+					"CLIENT_NAME":"$2",
+					"CLIENT_DOB":"$3",
+					"CLIENT_EMAIL":"$4",
+					"CLIENT_MOBILE":"$5",
+					"IS_ACTIVE":"$6",
+					"CLIENT_ROLE":"$7",
+					"CLIENT_ADDRESS":"$8",
+					"REGISTRATION_DATE":"$9",
+					"CLIENT_GENDER":"$10",
+					"CLIENT_ADHAR_NUMBER":"$11"
+
+					}
+					}
+				</format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('clientId')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientName')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientDob')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientEmail')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientMobile')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('isActive')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientRole')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientAddress')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('registrationDate')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientGender')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                    <arg evaluator="xml" expression="get-property('clientAdharNo')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                </args>
+            </payloadFactory>
+            <log level="custom">
+                <property expression="json-eval($)" name="++++ AFter Constructing Payload UPDATE CLIENT_DETAILS ++++"/>
+            </log>
+            <property name="Content-Type" scope="axis2" type="STRING" value="application/json"/>
+            <call>
+                <endpoint key="WSO2_Demo_Update_EP"/>
+            </call>
+            <log level="custom">
+                <property name="*** After Calling WSO2_Demo_Update_EP ***" value="*** After Calling WSO2_Demo_Update_EP ***"/>
+                <property expression="json-eval($)" name="RESPONSE_PAYLOAD"/>
+            </log>
+            <property expression="get-property('axis2','HTTP_SC')" name="API_HTTP_SC" scope="default" type="STRING" xmlns:ns="http://org.apache.synapse/xsd"/>
+            <log level="custom">
+                <property expression="$ctx:API_HTTP_SC" name="API_HTTP_SC"/>
+            </log>
+            <filter regex="true" source="boolean(get-property('API_HTTP_SC') = '202')" xmlns:ns="http://org.apache.synapse/xsd">
+                <then>
+                    <payloadFactory media-type="json">
+                        <format>{
+	"Status":"Updated Successfully "
+}</format>
+                        <args/>
+                    </payloadFactory>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{
+	"Status":"Failed To Update "
+}</format>
+                        <args/>
+                    </payloadFactory>
+                </else>
+            </filter>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence>
+            <log level="custom">
+                <property name="*** Inside UPDATE WSO2_Demo_API Fault Sequence ***" value="*** Inside UPDATE WSO2_Demo_API Fault Sequence***"/>
+            </log>
+            <sequence key="Generic_Fault_Seq"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+    <resource methods="DELETE" url-mapping="/delete">
+        <inSequence>
+            <log level="custom">
+                <property name="!!! Inside DELETE WSO2_Demo_API  !!!!!!" value="!!! Inside DELETE WSO2_Demo_API !!!!!!"/>
+                <property expression="json-eval($)" name="JSON_PAYLOAD"/>
+            </log>
+            <sequence key="WSO2_Demo_DeleteValidation_Seq"/>
+            <property expression="json-eval($)" name="ORIGINAL_PAYLOAD" scope="default" type="STRING"/>
+            <property expression="json-eval($.clientId)" name="clientId" scope="default" type="STRING"/>
+            <sequence key="WSO2_Demo_RecordSearch_Seq"/>
+            <payloadFactory media-type="json">
+                <format>{
+    "_deleteremoveClientDetails":{
+        "CLIENT_ID":$1
+    }
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('clientId')" xmlns:ns="http://org.apache.synapse/xsd"/>
+                </args>
+            </payloadFactory>
+            <call>
+                <endpoint key="WSO2_Demo_Delete_EP"/>
+            </call>
+            <log level="custom">
+                <property name="*** After Calling WSO2_Demo_Delete_EP ***" value="*** After Calling WSO2_Demo_Delete_EP ***"/>
+                <property expression="json-eval($)" name="RESPONSE_PAYLOAD"/>
+            </log>
+            <property expression="get-property('axis2','HTTP_SC')" name="API_HTTP_SC" scope="default" type="STRING" xmlns:ns="http://org.apache.synapse/xsd"/>
+            <log level="custom">
+                <property expression="$ctx:API_HTTP_SC" name="API_HTTP_SC"/>
+            </log>
+            <filter regex="true" source="boolean(get-property('API_HTTP_SC') = '202')" xmlns:ns="http://org.apache.synapse/xsd">
+                <then>
+                    <payloadFactory media-type="json">
+                        <format>{
+	"Status":"Deleted Successfully "
+}</format>
+                        <args/>
+                    </payloadFactory>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{
+	"Status":"Failed To Delete "
+}</format>
+                        <args/>
+                    </payloadFactory>
+                </else>
+            </filter>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence>
+            <log level="custom">
+                <property name="*** Inside DELETE WSO2_Demo_API Fault Sequence ***" value="*** Inside DELETE WSO2_Demo_API Fault Sequence***"/>
+            </log>
+            <sequence key="Generic_Fault_Seq"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>

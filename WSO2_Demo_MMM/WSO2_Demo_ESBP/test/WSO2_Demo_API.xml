@@ -1,0 +1,196 @@
+<unit-test>
+    <artifacts>
+        <test-artifact>
+            <artifact>/WSO2_Demo_ESBP/src/main/synapse-config/api/WSO2_Demo_API.xml</artifact>
+        </test-artifact>
+        <supportive-artifacts>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/sequences/WSO2_Demo_FetchValidation_Seq.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/local-entries/WSO2_Demo_FetchValidation_LE.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/endpoints/WSO2_Demo_Insert_EP.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/sequences/WSO2_Demo_DeleteValidation_Seq.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/endpoints/WSO2_Demo_Update_EP.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/endpoints/WSO2_Demo_Fetch_EP.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/sequences/WSO2_Demo_KafkaRead_Seq.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/sequences/WSO2_Demo_UpdateValidation_Seq.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/sequences/WSO2_Demo_InsertValidation_Seq.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/local-entries/WSO2_Demo_InsertValidation_LE.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/local-entries/WSO2_Demo_DeleteValidation_LE.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/sequences/WSO2_Demo_RecordSearch_Seq.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/endpoints/WSO2_Demo_Delete_EP.xml</artifact>
+            <artifact>/WSO2_Demo_MMM/WSO2_Demo_ESBP/src/main/synapse-config/local-entries/WSO2_Demo_UpdateValidation_LE.xml</artifact>
+        </supportive-artifacts>
+        <registry-resources/>
+        <connector-resources>
+            <connector-resource>/WSO2_Demo_MMM/WSO2Demo_KafkaConnector_CE/kafkaTransport-connector-2.0.5.zip</connector-resource>
+            <connector-resource>/WSO2_Demo_MMM/WSO2Demo_KafkaConnector_CE/kafkaTransport-connector-2.0.5.zip</connector-resource>
+        </connector-resources>
+    </artifacts>
+    <test-cases>
+        <test-case name="WSO2_Demo_Insert_Case">
+            <input>
+                <request-path>/insert</request-path>
+                <request-method>POST</request-method>
+                <request-protocol>http</request-protocol>
+                <payload><![CDATA[{
+    "clientName": "TestCase",
+    "clientDob": "2606/1995",
+    "clientEmail": "asa.asds@eidiko.com",
+    "clientMobile": "123456",
+    "isActive": "0",
+    "clientRole": "admin",
+    "clientAddress": "hyd",
+    "clientGender": "male",
+    "clientAdharNo": "1234567"
+}]]></payload>
+                <properties>
+                    <property name="Content-Type" scope="transport" value="application/json"/>
+                </properties>
+            </input>
+            <assertions>
+                <assertEquals>
+                    <actual>$body</actual>
+                    <expected><![CDATA[{
+    "clientId": "44"
+}]]></expected>
+                    <message>Error In Body</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$trp:Content-Type</actual>
+                    <expected><![CDATA[application/json;charset=UTF-8]]></expected>
+                    <message>Error in Content Type</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$statusCode</actual>
+                    <expected><![CDATA[200]]></expected>
+                    <message>Error In Status Code</message>
+                </assertEquals>
+            </assertions>
+        </test-case>
+        <test-case name="WSO2_Demo_Fetch_Case">
+            <input>
+                <request-path>/fetch</request-path>
+                <request-method>POST</request-method>
+                <request-protocol>http</request-protocol>
+                <payload><![CDATA[{
+    "clientId": 15
+}]]></payload>
+                <properties>
+                    <property name="Content-Type" scope="transport" value="application/json"/>
+                </properties>
+            </input>
+            <assertions>
+                <assertEquals>
+                    <actual>$body</actual>
+                    <expected><![CDATA[{
+    "CLIENT_DETAILS": {
+        "Client": {
+            "CLIENT_DOB": "2606/1995",
+            "CLIENT_ADHAR_NUMBER": "1234567",
+            "CLIENT_ROLE": "admin",
+            "CLIENT_EMAIL": "asa.asds@eidiko.com",
+            "CLIENT_MOBILE": "123456",
+            "CLIENT_ID": "15",
+            "CLIENT_ADDRESS": "hyd",
+            "CLIENT_NAME": "Praveen",
+            "CLIENT_GENDER": "male",
+            "IS_ACTIVE": "MA==",
+            "REGISTRATION_DATE": "2022-06-09T22:25:37.000+05:30"
+        }
+    }
+}]]></expected>
+                    <message>Error In Body</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$trp:Content-Type</actual>
+                    <expected><![CDATA[application/json;charset+UTF-8]]></expected>
+                    <message>Error In Content Type</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$statusCode</actual>
+                    <expected><![CDATA[200]]></expected>
+                    <message>Error In Status Code</message>
+                </assertEquals>
+            </assertions>
+        </test-case>
+        <test-case name="WSO2_Demo_Update_Case">
+            <input>
+                <request-path>/update</request-path>
+                <request-method>PUT</request-method>
+                <request-protocol>http</request-protocol>
+                <payload><![CDATA[{
+    "clientId": 22,
+    "clientName": "Legend",
+    "clientDob": "2606/1995",
+    "clientEmail": "asa.asds@eidiko.com",
+    "clientMobile": "123456",
+    "isActive": "0",
+    "clientRole": "admin",
+    "clientAddress": "hyd",
+    "registrationDate": "2022-06-09 15:09:36",
+    "clientGender": "male",
+    "clientAdharNo": "1234567"
+}]]></payload>
+                <properties>
+                    <property name="Content-Type" scope="transport" value="application/json"/>
+                </properties>
+            </input>
+            <assertions>
+                <assertEquals>
+                    <actual>$body</actual>
+                    <expected><![CDATA[{
+    "Status": "Updated Successfully "
+}]]></expected>
+                    <message>Error In Body</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$trp:Content-Type</actual>
+                    <expected><![CDATA[application/json;charset=UTF-8]]></expected>
+                    <message>Error In Content-Type</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$statusCode</actual>
+                    <expected><![CDATA[202]]></expected>
+                    <message>Error In Status Code</message>
+                </assertEquals>
+            </assertions>
+        </test-case>
+        <test-case name="WSO2_Demo_Delete_Case">
+            <input>
+                <request-path>/delete</request-path>
+                <request-method>DELETE</request-method>
+                <request-protocol>http</request-protocol>
+                <payload><![CDATA[{
+    "clientId": 44
+}]]></payload>
+                <properties>
+                    <property name="Content-Type" scope="transport" value="application/json"/>
+                </properties>
+            </input>
+            <assertions>
+                <assertEquals>
+                    <actual>$body</actual>
+                    <expected><![CDATA[{
+    "Status": "Deleted Successfully "
+}]]></expected>
+                    <message>Error In Body</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$trp:Content-Type</actual>
+                    <expected><![CDATA[application/json;charset=UTF-8]]></expected>
+                    <message>Error In Content-Type</message>
+                </assertEquals>
+                <assertEquals>
+                    <actual>$statusCode</actual>
+                    <expected><![CDATA[202]]></expected>
+                    <message>Error In Status Code</message>
+                </assertEquals>
+            </assertions>
+        </test-case>
+    </test-cases>
+    <mock-services>
+        <mock-service>/WSO2_Demo_MMM/WSO2_Demo_ESBP/test/resources/mock-services/WSO2_Demo_Delete_Mock.xml</mock-service>
+        <mock-service>/WSO2_Demo_MMM/WSO2_Demo_ESBP/test/resources/mock-services/WSO2_Demo_Update_Mock.xml</mock-service>
+        <mock-service>/WSO2_Demo_MMM/WSO2_Demo_ESBP/test/resources/mock-services/WSO2_Demo_Fetch_Mock.xml</mock-service>
+        <mock-service>/WSO2_Demo_MMM/WSO2_Demo_ESBP/test/resources/mock-services/WSO2_Demo_Insert_Mock.xml</mock-service>
+    </mock-services>
+</unit-test>

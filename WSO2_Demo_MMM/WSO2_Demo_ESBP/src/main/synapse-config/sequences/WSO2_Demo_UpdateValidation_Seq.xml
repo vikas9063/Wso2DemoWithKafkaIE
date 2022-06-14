@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="WSO2_Demo_UpdateValidation_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log level="custom">
+        <property name="!!!!!! Before  validating REQ-SERVICE-TYPE !!!!!" value="!!!!!!!! Before  validation REQ-SERVICE-TYPE !!!!!!!!!!"/>
+        <property expression="json-eval($)" name="JSON_PAYLOAD PERS_UpdateValidation_Seq"/>
+    </log>
+    <validate cache-schema="true" source="json-eval($)">
+        <schema key="WSO2_Demo_UpdateValidation_LE"/>
+        <on-fail>
+            <payloadFactory media-type="json">
+                <format>{"Error":"Error in Validating The Request ",&#xd;
+"Message":"Validation Error"}</format>
+                <args/>
+            </payloadFactory>
+            <property name="RESPONSE" scope="default" type="STRING" value="true"/>
+            <respond/>
+        </on-fail>
+    </validate>
+    <log level="custom">
+        <property name="!!!!!! After successfully validating REQ-SERVICE-TYPE !!!!!" value="!!!!!!!! After successfully validation REQ-SERVICE-TYPE !!!!!!!!!!"/>
+        <property expression="json-eval($)" name="JSON_PAYLOAD PERS_UpdateValidation_Seq"/>
+    </log>
+</sequence>

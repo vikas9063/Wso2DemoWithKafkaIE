@@ -1,0 +1,163 @@
+<data transports="http https" serviceGroup="" serviceNamespace="" name="WSO2_Demo_DSS">
+  <description />
+  <config id="Ws02Demo">
+    <property name="driverClassName">com.mysql.cj.jdbc.Driver</property>
+    <property name="url">jdbc:mysql://localhost:3306/eidiko</property>
+    <property name="username">root</property>
+    <property name="password">root</property>
+
+  </config>
+  
+   <query id="InserClient" returnGeneratedKeys="true" keyColumns="CLIENT_ID" useConfig="Ws02Demo">
+    <sql>INSERT INTO CLIENT_DETAILS(CLIENT_NAME,
+    CLIENT_DOB,
+    CLIENT_EMAIL,
+    CLIENT_MOBILE,
+    IS_ACTIVE,
+    CLIENT_ROLE,
+    CLIENT_ADDRESS,
+    CLIENT_GENDER,
+    CLIENT_ADHAR_NUMBER
+    )
+	VALUES(:CLIENT_NAME,
+	:CLIENT_DOB,
+	:CLIENT_EMAIL,
+	:CLIENT_MOBILE,
+	:IS_ACTIVE,
+	:CLIENT_ROLE,
+	:CLIENT_ADDRESS,
+	:CLIENT_GENDER,
+	:CLIENT_ADHAR_NUMBER)
+	</sql>
+    <result useColumnNumbers="true" rowName="Entry" element="GeneratedKeys">
+      <element name="CLIENT_ID" xsdType="integer" column="1" />
+    </result>
+    <param name="CLIENT_NAME" sqlType="STRING" />
+    <param name="CLIENT_DOB" sqlType="STRING" />
+    <param name="CLIENT_EMAIL" sqlType="STRING" />
+    <param name="CLIENT_MOBILE" sqlType="STRING" />
+    <param name="IS_ACTIVE" sqlType="STRING" />
+    <param name="CLIENT_ROLE" sqlType="STRING" />
+    <param name="CLIENT_ADDRESS" sqlType="STRING" />
+    <param name="CLIENT_GENDER" sqlType="STRING" />
+    <param name="CLIENT_ADHAR_NUMBER" sqlType="STRING" />
+  </query>
+  <resource method="POST" path="/CreateClientDetails">
+    <call-query href="InserClient">
+      <with-param name="CLIENT_NAME" query-param="CLIENT_NAME" />
+      <with-param name="CLIENT_DOB" query-param="CLIENT_DOB" />
+      <with-param name="CLIENT_EMAIL" query-param="CLIENT_EMAIL" />
+      <with-param name="CLIENT_MOBILE" query-param="CLIENT_MOBILE" />
+      <with-param name="IS_ACTIVE" query-param="IS_ACTIVE" />
+      <with-param name="CLIENT_ROLE" query-param="CLIENT_ROLE" />
+      <with-param name="CLIENT_ADDRESS" query-param="CLIENT_ADDRESS" />
+      <with-param name="CLIENT_GENDER" query-param="CLIENT_GENDER" />
+      <with-param name="CLIENT_ADHAR_NUMBER" query-param="CLIENT_ADHAR_NUMBER" />
+    </call-query>
+  </resource>
+  
+  <!--  FETCH  -->
+
+<query id="FetchClient" useConfig="Ws02Demo">
+		<sql>SELECT CLIENT_ID,
+		CLIENT_NAME,
+		CLIENT_DOB,
+		CLIENT_EMAIL,
+		CLIENT_MOBILE,
+		IS_ACTIVE,
+		CLIENT_ROLE,
+		CLIENT_ADDRESS,
+		REGISTRATION_DATE,
+		CLIENT_GENDER,
+		CLIENT_ADHAR_NUMBER FROM CLIENT_DETAILS WHERE
+		CLIENT_ID=:CLIENT_ID
+		</sql>
+		<param name="CLIENT_ID" sqlType="INTEGER" />
+		<result outputType="json">
+		{
+			"CLIENT_DETAILS":	{
+				"Client":	{
+						"CLIENT_ID" :"$CLIENT_ID" ,
+						"CLIENT_NAME" :"$CLIENT_NAME",
+						"CLIENT_DOB" :"$CLIENT_DOB",
+						"CLIENT_EMAIL" :"$CLIENT_EMAIL",
+						"CLIENT_MOBILE" :"$CLIENT_MOBILE",
+						"IS_ACTIVE" :"$IS_ACTIVE",
+						"CLIENT_ROLE" :"$CLIENT_ROLE",
+						"CLIENT_ADDRESS" :"$CLIENT_ADDRESS",
+						"REGISTRATION_DATE" :"$REGISTRATION_DATE",
+						"CLIENT_GENDER" :"$CLIENT_GENDER",
+						"CLIENT_ADHAR_NUMBER" :"$CLIENT_ADHAR_NUMBER"
+				}
+			}
+		}
+		</result>
+	</query>
+	<resource path="/fetchClientDetails" method="POST">
+		<description />
+		<call-query href="FetchClient">
+			<with-param name="CLIENT_ID" query-param="CLIENT_ID" />
+		</call-query>
+	</resource> 
+	
+	<!-- UPDATE -->
+ 
+	<query id="UpdateClient" useConfig="Ws02Demo">
+		<sql>UPDATE CLIENT_DETAILS SET
+			CLIENT_NAME = :CLIENT_NAME ,
+			CLIENT_DOB = :CLIENT_DOB ,
+			CLIENT_EMAIL = :CLIENT_EMAIL ,
+			CLIENT_MOBILE = :CLIENT_MOBILE ,
+			IS_ACTIVE = :IS_ACTIVE ,
+			CLIENT_ROLE = :CLIENT_ROLE ,
+			CLIENT_ADDRESS = :CLIENT_ADDRESS ,
+			REGISTRATION_DATE = :REGISTRATION_DATE,
+			CLIENT_GENDER = :CLIENT_GENDER,
+			CLIENT_ADHAR_NUMBER = :CLIENT_ADHAR_NUMBER
+			WHERE CLIENT_ID = :CLIENT_ID
+		</sql>
+		<param name="CLIENT_ID" sqlType="INTEGER" />
+		<param name="CLIENT_NAME" sqlType="STRING" />
+		<param name="CLIENT_DOB" sqlType="STRING" />
+		<param name="CLIENT_EMAIL" sqlType="STRING" />
+		<param name="CLIENT_MOBILE" sqlType="STRING" />
+		<param name="IS_ACTIVE" sqlType="STRING" />
+		<param name="CLIENT_ROLE" sqlType="STRING" />
+		<param name="CLIENT_ADDRESS" sqlType="STRING" />
+		<param name="REGISTRATION_DATE" sqlType="STRING" />
+		<param name="CLIENT_GENDER" sqlType="STRING" />
+		<param name="CLIENT_ADHAR_NUMBER" sqlType="STRING" />
+	</query>
+	<resource path="/updateClientDetails" method="PUT">
+		<description />
+		<call-query href="UpdateClient">
+			<with-param name="CLIENT_ID" query-param="CLIENT_ID" />
+			<with-param name="CLIENT_NAME" query-param="CLIENT_NAME" />
+			<with-param name="CLIENT_DOB" query-param="CLIENT_DOB" />
+			<with-param name="CLIENT_EMAIL" query-param="CLIENT_EMAIL" />
+			<with-param name="CLIENT_MOBILE" query-param="CLIENT_MOBILE" />
+			<with-param name="IS_ACTIVE" query-param="IS_ACTIVE" />
+			<with-param name="CLIENT_ROLE" query-param="CLIENT_ROLE" />
+			<with-param name="CLIENT_ADDRESS" query-param="CLIENT_ADDRESS" />
+			<with-param name="REGISTRATION_DATE" query-param="REGISTRATION_DATE" />
+			<with-param name="CLIENT_GENDER" query-param="CLIENT_GENDER" />
+			<with-param name="CLIENT_ADHAR_NUMBER" query-param="CLIENT_ADHAR_NUMBER" />
+		</call-query>
+	</resource>
+	
+	
+	<!-- DELETE -->
+	
+	<query id="DeleteClient" useConfig="Ws02Demo">
+		<sql>DELETE FROM CLIENT_DETAILS WHERE CLIENT_ID = :CLIENT_ID
+		</sql>
+		<param name="CLIENT_ID" sqlType="INTEGER" />
+	</query>
+	<resource path="/removeClientDetails" method="DELETE">
+		<description />
+		<call-query href="DeleteClient">
+			<with-param name="CLIENT_ID" query-param="CLIENT_ID" />
+		</call-query>
+	</resource> 
+  
+</data>

@@ -1,0 +1,42 @@
+<mock-service>
+    <service-name>WSO2_Demo_Fetch_EP</service-name>
+    <port>9092</port>
+    <context>/wso2-demo</context>
+    <resources>
+        <resource>
+            <sub-context>/fetch</sub-context>
+            <method>POST</method>
+            <request>
+                <payload><![CDATA[{
+    "clientId": 15
+}]]></payload>
+                <headers>
+                    <header name="Content-Type" value="application/json"/>
+                </headers>
+            </request>
+            <response>
+                <status-code>200</status-code>
+                <payload><![CDATA[{
+    "CLIENT_DETAILS": {
+        "Client": {
+            "CLIENT_DOB": "2606/1995",
+            "CLIENT_ADHAR_NUMBER": "1234567",
+            "CLIENT_ROLE": "admin",
+            "CLIENT_EMAIL": "asa.asds@eidiko.com",
+            "CLIENT_MOBILE": "123456",
+            "CLIENT_ID": "15",
+            "CLIENT_ADDRESS": "hyd",
+            "CLIENT_NAME": "Praveen",
+            "CLIENT_GENDER": "male",
+            "IS_ACTIVE": "MA==",
+            "REGISTRATION_DATE": "2022-06-09T22:25:37.000+05:30"
+        }
+    }
+}]]></payload>
+                <headers>
+                    <header name="Content-Type" value="application/json"/>
+                </headers>
+            </response>
+        </resource>
+    </resources>
+</mock-service>

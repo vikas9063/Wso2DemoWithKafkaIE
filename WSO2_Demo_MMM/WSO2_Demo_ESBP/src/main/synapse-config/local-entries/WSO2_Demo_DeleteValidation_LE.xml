@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localEntry key="WSO2_Demo_DeleteValidation_LE" xmlns="http://ws.apache.org/ns/synapse"><![CDATA[{"definitions": {},"$schema": "http://json-schema.org/draft-07/schema#", "$id": "https://example.com/object1654840967.json", "title": "Root", "type": "object","required": ["clientId"],"properties": {"clientId": {"$id": "#root/clientId", "title": "Clientid", "type": "integer","examples": [10],"default": 0}}}]]></localEntry>

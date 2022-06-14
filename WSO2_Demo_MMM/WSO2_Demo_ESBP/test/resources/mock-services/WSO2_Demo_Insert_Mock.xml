@@ -1,0 +1,36 @@
+<mock-service>
+    <service-name>WSO2_Demo_Insert_EP</service-name>
+    <port>9092</port>
+    <context>/wso2-demo</context>
+    <resources>
+        <resource>
+            <sub-context>/insert</sub-context>
+            <method>POST</method>
+            <request>
+                <payload><![CDATA[{
+    "clientName": "TestCase",
+    "clientDob": "2606/1995",
+    "clientEmail": "asa.asds@eidiko.com",
+    "clientMobile": "123456",
+    "isActive": "0",
+    "clientRole": "admin",
+    "clientAddress": "hyd",
+    "clientGender": "male",
+    "clientAdharNo": "1234567"
+}]]></payload>
+                <headers>
+                    <header name="Content-Type" value="application/xml"/>
+                </headers>
+            </request>
+            <response>
+                <status-code>200</status-code>
+                <payload><![CDATA[{
+    "clientId": "44"
+}]]></payload>
+                <headers>
+                    <header name="Content-Type" value="application/json"/>
+                </headers>
+            </response>
+        </resource>
+    </resources>
+</mock-service>

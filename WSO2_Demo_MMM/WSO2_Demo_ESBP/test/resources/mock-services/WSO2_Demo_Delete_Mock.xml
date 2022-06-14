@@ -1,0 +1,28 @@
+<mock-service>
+    <service-name>WSO2_Demo_Delete_EP</service-name>
+    <port>9092</port>
+    <context>/wso2-demo</context>
+    <resources>
+        <resource>
+            <sub-context>/delete</sub-context>
+            <method>DELETE</method>
+            <request>
+                <payload><![CDATA[{
+    "clientId": 44
+}]]></payload>
+                <headers>
+                    <header name="Content-Type" value="application/json"/>
+                </headers>
+            </request>
+            <response>
+                <status-code>202</status-code>
+                <payload><![CDATA[{
+    "Status": "Deleted Successfully "
+}]]></payload>
+                <headers>
+                    <header name="Content-Type" value="application/json"/>
+                </headers>
+            </response>
+        </resource>
+    </resources>
+</mock-service>
